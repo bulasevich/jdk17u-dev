@@ -350,6 +350,9 @@ ReservedCodeSpace CodeCache::reserve_heap_memory(size_t size) {
 
 // Heaps available for allocation
 bool CodeCache::heap_available(int code_blob_type) {
+  if (!ExtraHotCodeCache && code_blob_type == CodeBlobType::MethodExtraHot) {
+    return false;
+  }
   if (!SegmentedCodeCache) {
     // No segmentation: use a single code heap
     return (code_blob_type == CodeBlobType::All);

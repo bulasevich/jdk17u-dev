@@ -3853,7 +3853,7 @@ Node* GraphKit::new_array(Node* klass_node,     // array klass (maybe variable)
   int   layout_is_con = (layout_val == nullptr);
 
   if (!layout_is_con && !StressReflectiveCode &&
-      !too_many_traps(Deoptimization::Reason_class_check)) {
+      !too_many_traps_or_recompiles(Deoptimization::Reason_class_check)) {
     // This is a reflective array creation site.
     // Optimistically assume that it is a subtype of Object[],
     // so that we can fold up all the address arithmetic.
@@ -4097,7 +4097,7 @@ InitializeNode* AllocateNode::initialization() {
 //------------------------------add_predicate_impl----------------------------
 void GraphKit::add_empty_predicate_impl(Deoptimization::DeoptReason reason, int nargs) {
   // Too many traps seen?
-  if (too_many_traps(reason)) {
+  if (too_many_traps_or_recompiles(reason)) {
 #ifdef ASSERT
     if (TraceLoopPredicate) {
       int tc = C->trap_count(reason);

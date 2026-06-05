@@ -166,7 +166,7 @@ void Parse::array_store_check() {
   // succeeds.
   bool always_see_exact_class = false;
   if (MonomorphicArrayCheck
-      && !too_many_traps(Deoptimization::Reason_array_check)
+      && !too_many_traps_or_recompiles(Deoptimization::Reason_array_check)
       && !tak->klass_is_exact()
       && tak != TypeKlassPtr::OBJECT) {
       // Regarding the fourth condition in the if-statement from above:

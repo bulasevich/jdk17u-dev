@@ -430,7 +430,7 @@ void Parse::do_tableswitch() {
       profile = (ciMultiBranchData*)data;
     }
   }
-  bool trim_ranges = !C->too_many_traps(method(), bci(), Deoptimization::Reason_unstable_if);
+  bool trim_ranges = !C->too_many_traps_or_recompiles(method(), bci(), Deoptimization::Reason_unstable_if);
 
   // generate decision tree, using trichotomy when possible
   int rnum = len+2;
@@ -504,7 +504,7 @@ void Parse::do_lookupswitch() {
       profile = (ciMultiBranchData*)data;
     }
   }
-  bool trim_ranges = !C->too_many_traps(method(), bci(), Deoptimization::Reason_unstable_if);
+  bool trim_ranges = !C->too_many_traps_or_recompiles(method(), bci(), Deoptimization::Reason_unstable_if);
 
   // generate decision tree, using trichotomy when possible
   jint* table = NEW_RESOURCE_ARRAY(jint, len*3);
@@ -918,7 +918,7 @@ bool Parse::create_jump_tables(Node* key_val, SwitchRange* lo, SwitchRange* hi) 
 //----------------------------jump_switch_ranges-------------------------------
 void Parse::jump_switch_ranges(Node* key_val, SwitchRange *lo, SwitchRange *hi, int switch_depth) {
   Block* switch_block = block();
-  bool trim_ranges = !C->too_many_traps(method(), bci(), Deoptimization::Reason_unstable_if);
+  bool trim_ranges = !C->too_many_traps_or_recompiles(method(), bci(), Deoptimization::Reason_unstable_if);
 
   if (switch_depth == 0) {
     // Do special processing for the top-level call.
@@ -1349,7 +1349,7 @@ bool Parse::seems_never_taken(float prob) const {
 // seems stable, we will put an expensive uncommon trap
 // on the untaken path.
 bool Parse::seems_stable_comparison() const {
-  if (C->too_many_traps(method(), bci(), Deoptimization::Reason_unstable_if)) {
+  if (C->too_many_traps_or_recompiles(method(), bci(), Deoptimization::Reason_unstable_if)) {
     return false;
   }
   return true;

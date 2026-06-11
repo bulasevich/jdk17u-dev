@@ -699,6 +699,13 @@ const TypeFunc* OptoRuntime::Math_DD_D_Type() {
   return TypeFunc::make(domain, range);
 }
 
+const TypeFunc* OptoRuntime::void_void_Type() {
+  const Type **fields = TypeTuple::fields(0);
+  const TypeTuple *domain = TypeTuple::make(TypeFunc::Parms+0, fields);
+  const TypeTuple *range  = TypeTuple::make(TypeFunc::Parms+0, fields);
+  return TypeFunc::make(domain, range);
+}
+
 //-------------- currentTimeMillis, currentTimeNanos, etc
 
 const TypeFunc* OptoRuntime::void_long_Type() {

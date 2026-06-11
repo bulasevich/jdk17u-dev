@@ -48,6 +48,7 @@
 #include "opto/subtypenode.hpp"
 #include "runtime/deoptimization.hpp"
 #include "runtime/sharedRuntime.hpp"
+#include "runtime/stubRoutines.hpp"
 #include "utilities/bitMap.inline.hpp"
 #include "utilities/powerOfTwo.hpp"
 #include "utilities/growableArray.hpp"
@@ -646,6 +647,20 @@ void GraphKit::builtin_throw(Deoptimization::DeoptReason reason, Node* arg) {
                      Deoptimization::trap_reason_name(reason),
                      C->trap_count(reason));
     action = Deoptimization::Action_none;
+  }
+  // too_many_recompiles causes Action_none downgrade in uncommon_trap
+  bool action_none = (action == Deoptimization::Action_none) || too_many_recompiles(reason);
+  // replace deopt with the runtime call for the null_check
+  if (reason == Deoptimization::Reason_null_check && action_none) {
+    ciInstanceKlass* npe_klass = env()->NullPointerException_instance()->klass()->as_instance_klass();
+    kill_dead_locals();
+    Node* call = make_runtime_call(RC_NO_LEAF | RC_MUST_THROW | RC_UNCOMMON,
+                                   OptoRuntime::void_void_Type(),
+                                   StubRoutines::throw_NullPointerException_at_call_entry(),
+                                   "throw_NullPointerException", TypeRawPtr::BOTTOM);
+    make_slow_call_ex(call, npe_klass, false, false);
+    stop();
+    return;
   }
 
   // "must_throw" prunes the JVM state to include only the stack, if there

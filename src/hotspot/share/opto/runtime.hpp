@@ -251,6 +251,7 @@ private:
   static const TypeFunc* complete_monitor_enter_Type();
   static const TypeFunc* complete_monitor_exit_Type();
   static const TypeFunc* monitor_notify_Type();
+  static const TypeFunc* void_void_Type();
   static const TypeFunc* uncommon_trap_Type();
   static const TypeFunc* athrow_Type();
   static const TypeFunc* rethrow_Type();
